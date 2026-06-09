@@ -71,21 +71,40 @@ function readTail(path, maxBytes) {
   }
 }
 
-// Phrases that signal "I (Claude) was wrong / I'm sorry". Case-insensitive.
+// Phrases that signal "I (Claude) was wrong / I'm sorry". Case-insensitive
+// substring match. Kept self-referential on purpose — phrases like
+// "that's incorrect" are excluded because Claude also says them when correcting
+// YOU, which would fire the popup on a non-mistake.
 const TRIGGERS = [
   "you're right",
   'you are right',
+  "you're correct",
+  'you are correct',
   'my mistake',
   'i apologi', // apologize / apologise
+  'apologies', // my apologies / apologies for
   "i'm sorry",
   'i am sorry',
   'i was wrong',
+  'i was mistaken',
+  'i was incorrect',
+  'i stand corrected',
   'good catch',
   'my bad',
   'i made a mistake',
   'i made an error',
   'that was wrong',
   'i messed up',
+  'i misunderstood',
+  'i misread',
+  'i overlooked',
+  'i missed that',
+  'i got it wrong',
+  'got that wrong',
+  'i was confused',
+  'i jumped the gun',
+  'thanks for catching',
+  'thanks for the correction',
   'oops',
 ];
 

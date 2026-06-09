@@ -28,9 +28,18 @@ test('matchesTrigger: case-insensitive, substring, mid-sentence', () => {
   assert.equal(matchesTrigger('You are RIGHT about that'), true);
   assert.equal(matchesTrigger("oops, I'll fix it"), true);
   assert.equal(matchesTrigger('Good catch!'), true);
+  assert.equal(matchesTrigger('I stand corrected — the API returns a string.'), true);
+  assert.equal(matchesTrigger('Apologies, I misread the config.'), true);
+  assert.equal(matchesTrigger("You're correct, that was my error."), true);
   assert.equal(matchesTrigger('Here is the answer you requested.'), false);
   assert.equal(matchesTrigger(''), false);
   assert.equal(matchesTrigger(undefined), false);
+});
+
+test('matchesTrigger: does NOT fire when Claude corrects the USER (self-referential only)', () => {
+  assert.equal(matchesTrigger("Actually that's incorrect — your assumption is off."), false);
+  assert.equal(matchesTrigger('You are wrong about the timezone handling.'), false);
+  assert.equal(matchesTrigger('That approach has a mistake in it you should fix.'), false);
 });
 
 test('extractText: normalizes string, content array, and {content}', () => {
