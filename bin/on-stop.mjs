@@ -33,7 +33,7 @@ function logRun(s) {
 
 // Cooldown so a burst of apologetic replies can't stack dialogs/Terminal
 // windows — at most one trigger per window.
-const COOLDOWN_MS = 60_000;
+const COOLDOWN_MS = 20_000;
 const STATE = join(homedir(), '.claude', 'claude-atone', '.last-trigger');
 function onCooldown() {
   try {

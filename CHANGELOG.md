@@ -4,6 +4,13 @@ All notable changes to this project are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/), and this project adheres to
 [Semantic Versioning](https://semver.org/).
 
+## [0.1.2]
+
+### Changed
+- Shorten the trigger cooldown from 60s to 20s (`COOLDOWN_MS` in
+  `bin/on-stop.mjs`) so back-to-back apologies pop more responsively while still
+  guarding against stacked dialog/Terminal windows.
+
 ## [0.1.1]
 
 First properly-released version (published from CI with OIDC provenance).
@@ -32,5 +39,6 @@ Initial public release (manually published; superseded by 0.1.1).
   preserved; migration of pre-rename `claude-punishment` installs.
 - Zero runtime dependencies.
 
+[0.1.2]: https://github.com/aashutosh-prakash/claude-atone/releases/tag/v0.1.2
 [0.1.1]: https://github.com/aashutosh-prakash/claude-atone/releases/tag/v0.1.1
 [0.1.0]: https://github.com/aashutosh-prakash/claude-atone/releases/tag/v0.1.0

@@ -92,7 +92,7 @@ Claude finishes a reply
 so an animation can't be painted into it without clashing. A separate window is
 its own TTY, so it plays cleanly.
 
-A 60-second cooldown keeps a burst of apologetic replies from stacking dialogs.
+A 20-second cooldown keeps a burst of apologetic replies from stacking dialogs.
 
 ## macOS permission
 
@@ -146,7 +146,7 @@ node ~/.claude/claude-atone/updown.mjs --once     # ~5s, then exits
 | What | Where |
 | ---- | ----- |
 | Trigger phrases | `TRIGGERS` array in `bin/on-stop.mjs` |
-| Cooldown window | `COOLDOWN_MS` in `bin/on-stop.mjs` (default 60s) |
+| Cooldown window | `COOLDOWN_MS` in `bin/on-stop.mjs` (default 20s) |
 | Figure size | `W` / `H` at the top of `bin/updown.mjs` |
 | Squat depth | the `hipY` formula in `drawFigure` |
 | Speed | `setInterval(frame, 90)` (frame period, ms) + the `t * 0.5` ease factor |
