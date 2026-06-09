@@ -1,10 +1,10 @@
 {
   "name": "claude-atone",
-  "version": "0.1.0",
-  "description": "When Claude Code admits a mistake, a little guy does penance squats (the school \"uthak-baithak\") in a popup terminal — a macOS Stop hook",
+  "version": "0.1.1",
+  "description": "When Claude Code admits a mistake, a little guy does penance squats in a popup terminal — a macOS Stop hook",
   "type": "module",
   "bin": {
-    "claude-atone": "./bin/cli.mjs"
+    "claude-atone": "bin/cli.mjs"
   },
   "files": [
     "bin",
