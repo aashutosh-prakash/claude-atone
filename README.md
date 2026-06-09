@@ -10,9 +10,9 @@
 
 <sub>Unofficial, community-maintained — not affiliated with Anthropic.</sub>
 
-<!-- TODO before/at v0.1.0: drop a ~5s screen capture of the dialog → animation here.
-     e.g. ![demo](docs/demo.gif) — this is a visual tool; the GIF is the value prop. -->
-_Demo: run `npx claude-atone --test` to see the dialog + squats live (a GIF is on the way)._
+<p align="center">
+  <img src="docs/demo.gif" alt="claude-atone doing up-down squats in a popup terminal" width="320">
+</p>
 
 **macOS only.** Pure Node + ANSI — no dependencies, no GIF, no Homebrew. The
 animation is real pixel graphics painted as colored Unicode half-blocks (the
