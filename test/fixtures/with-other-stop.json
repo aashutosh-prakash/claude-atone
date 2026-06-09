@@ -1,0 +1,15 @@
+{
+  "theme": "dark",
+  "hooks": {
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "node /Users/test/.claude/claude-nudge/notify.js"
+          }
+        ]
+      }
+    ]
+  }
+}

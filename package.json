@@ -1,0 +1,45 @@
+{
+  "name": "claude-atone",
+  "version": "0.1.0",
+  "description": "When Claude Code admits a mistake, a little guy does penance squats (the school \"uthak-baithak\") in a popup terminal — a macOS Stop hook",
+  "type": "module",
+  "bin": {
+    "claude-atone": "./bin/cli.mjs"
+  },
+  "files": [
+    "bin",
+    "README.md",
+    "LICENSE",
+    "SECURITY.md",
+    "CHANGELOG.md"
+  ],
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "test": "node --test test/*.test.mjs",
+    "prepublishOnly": "npm test && node bin/cli.mjs --dry-run"
+  },
+  "keywords": [
+    "claude",
+    "claude-code",
+    "claude-code-hook",
+    "stop-hook",
+    "animation",
+    "fun",
+    "mac",
+    "macos",
+    "osascript",
+    "cli-hook"
+  ],
+  "license": "MIT",
+  "author": "Aashutosh Prakash <aashutosh.code@gmail.com>",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/aashutosh-prakash/claude-atone.git"
+  },
+  "bugs": {
+    "url": "https://github.com/aashutosh-prakash/claude-atone/issues"
+  },
+  "homepage": "https://github.com/aashutosh-prakash/claude-atone#readme"
+}
