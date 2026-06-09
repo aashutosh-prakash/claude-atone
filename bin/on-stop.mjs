@@ -151,6 +151,20 @@ function lastAssistantText(transcriptPath) {
   return '';
 }
 
+// Dialog prompts — one is picked at random per trigger so it doesn't feel
+// canned. These are static (never built from untrusted input); they're escaped
+// for the AppleScript string literal below purely to keep the script well-formed.
+const PROMPTS = [
+  'Do you want me to atone? 🙏',
+  'I admit I was wrong. Shall I atone? 🙏',
+  'I owe you penance. Begin? 🙏',
+  'Time to repent. Shall I? 🙇',
+  'Should I do my uthak-baithak? 🙇',
+  "You're right (again). Penance? 🙏",
+  'I deserve this. Proceed? 😔',
+  'Penance time? 🙏',
+];
+
 // Ask the user (native macOS dialog) and, only on "Yes", open a small Terminal
 // window, play the animation (~5s) and auto-close it. Runs as ONE detached
 // osascript so it outlives this hook process while the user decides. Window is
@@ -159,18 +173,21 @@ function lastAssistantText(transcriptPath) {
 // a custom title keeps the tab header clean.
 function playAnimation() {
   const anim = join(homedir(), '.claude', 'claude-atone', 'updown.mjs');
+  const prompt = PROMPTS[Math.floor(Math.random() * PROMPTS.length)];
   if (process.env.CLAUDE_ATONE_DRYRUN) {
-    console.log(`[dry-run] would prompt "atone?" then (on Yes) play: ${anim}`);
+    console.log(`[dry-run] would prompt ${JSON.stringify(prompt)} then (on Yes) play: ${anim}`);
     return;
   }
   // Single-quote the path for the shell (handles spaces / metacharacters), then
   // escape the whole command for the double-quoted AppleScript string literal.
   const shellCmd = `clear; node '${anim.replace(/'/g, "'\\''")}' --once`;
   const cmd = shellCmd.replace(/\\/g, '\\\\').replace(/"/g, '\\"');
+  // Escape the chosen prompt the same way for its double-quoted AppleScript literal.
+  const promptOsa = prompt.replace(/\\/g, '\\\\').replace(/"/g, '\\"');
   const osa = [
     'set doIt to false',
     'try',
-    '  set ans to button returned of (display dialog "Do you want me to atone? 🙏" buttons {"No", "Yes"} default button "Yes" with title "claude-atone" giving up after 30)',
+    `  set ans to button returned of (display dialog "${promptOsa}" buttons {"No", "Yes"} default button "Yes" with title "claude-atone" giving up after 30)`,
     '  if ans is "Yes" then set doIt to true',
     'end try',
     'if doIt then',
@@ -244,4 +261,4 @@ if (invokedDirectly()) {
   process.exit(0);
 }
 
-export { TRIGGERS, matchesTrigger, extractText, lastAssistantText, RUNNER_VERSION };
+export { TRIGGERS, PROMPTS, matchesTrigger, extractText, lastAssistantText, RUNNER_VERSION };

@@ -3,13 +3,25 @@ import assert from 'node:assert/strict';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 
-import { TRIGGERS, matchesTrigger, extractText, lastAssistantText } from '../bin/on-stop.mjs';
+import { TRIGGERS, PROMPTS, matchesTrigger, extractText, lastAssistantText } from '../bin/on-stop.mjs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 
 test('TRIGGERS is a non-empty list of lowercase phrases', () => {
   assert.ok(Array.isArray(TRIGGERS) && TRIGGERS.length > 0);
   for (const t of TRIGGERS) assert.equal(t, t.toLowerCase());
+});
+
+test('PROMPTS is a non-empty pool of safe single-line strings', () => {
+  assert.ok(Array.isArray(PROMPTS) && PROMPTS.length >= 2);
+  for (const p of PROMPTS) {
+    assert.equal(typeof p, 'string');
+    assert.ok(p.length > 0);
+    assert.ok(!p.includes('\n'), 'prompt must be single-line (AppleScript dialog)');
+    // No raw double-quote/backslash that would break the AppleScript literal
+    // (none expected; this guards future additions).
+    assert.ok(!/["\\]/.test(p), `prompt must not contain " or \\: ${p}`);
+  }
 });
 
 test('matchesTrigger: case-insensitive, substring, mid-sentence', () => {
