@@ -5,8 +5,8 @@
 [![license: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
 
 > When [Claude Code](https://claude.com/claude-code) admits a mistake, a little
-> guy holds his ears and does up-down squats (the school "uthak-baithak"
-> punishment) in a popup terminal.
+> guy holds his ears and does up-down squats as punishment in a popup
+> terminal.
 
 <sub>Unofficial, community-maintained — not affiliated with Anthropic.</sub>
 
