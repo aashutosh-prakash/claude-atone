@@ -94,6 +94,22 @@ its own TTY, so it plays cleanly.
 
 A 60-second cooldown keeps a burst of apologetic replies from stacking dialogs.
 
+## macOS permission
+
+Opening that popup uses **Apple Events to control Terminal**, which macOS gates
+behind the **Automation** permission. The first time the hook fires, macOS asks
+*"…wants to control Terminal"* — click **OK**.
+
+Run it up front so the first real one isn't missed:
+
+```bash
+npx claude-atone --test
+```
+
+If you dismissed the prompt and the animation never appears, re-enable it in
+**System Settings → Privacy & Security → Automation**. (If permission is denied
+the hook just does nothing — it never blocks or errors Claude Code.)
+
 ## What it writes to `settings.json`
 
 ```diff

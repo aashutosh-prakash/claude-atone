@@ -307,9 +307,14 @@ function cmdInstall(p, flags) {
     `  hook    : Stop  (${action})`,
     `  runner  : ${p.runner}`,
     `  backup  : ${backupPath || '(no previous settings to back up)'}`,
-    `  next    : ${c(COLOR.cyan, 'npx claude-atone --test')}  ${c(COLOR.dim, '(pops the "atone?" dialog now)')}`,
+    `  next    : ${c(COLOR.cyan, 'npx claude-atone --test')}  ${c(COLOR.dim, '(fires the popup now)')}`,
   ];
   process.stdout.write(box.join('\n') + '\n');
+  process.stdout.write(
+    c(COLOR.dim, '  Note: the popup opens a Terminal window via macOS Automation. The first time') + '\n' +
+    c(COLOR.dim, '  it fires, macOS asks to allow controlling Terminal — click OK. Run') + '\n' +
+    c(COLOR.dim, "  `npx claude-atone --test` now to grant it up front so the first real one isn't missed.") + '\n'
+  );
 }
 
 function cmdUninstall(p, flags) {
@@ -355,7 +360,8 @@ function cmdTest(p) {
       env: { ...process.env, CLAUDE_ATONE_TEST: '1' },
     });
     process.stdout.write(c(COLOR.green, '✓ test trigger fired') + '\n');
-    process.stdout.write(c(COLOR.dim, '  A native dialog should appear. Click "Yes" to watch the animation.') + '\n');
+    process.stdout.write(c(COLOR.dim, '  macOS may first ask to allow controlling Terminal — click OK (one-time).') + '\n');
+    process.stdout.write(c(COLOR.dim, '  Then a dialog appears; click "Yes" to watch the animation.') + '\n');
   } catch (err) {
     fail(`Failed to fire test trigger: ${err.message}`);
   }
@@ -406,6 +412,14 @@ function cmdDoctor(p) {
   let osascriptOk = false;
   try { execFileSync('which', ['osascript'], { stdio: 'ignore' }); osascriptOk = true; } catch { /* noop */ }
   allOk = check('osascript is available', osascriptOk, 'macOS normally ships this — check PATH') && allOk;
+
+  // Not a pass/fail check — actively probing would launch Terminal and pop a
+  // surprise prompt. `--test` is the interactive grant path.
+  process.stdout.write(
+    `  ${c(COLOR.dim, 'ℹ the popup needs macOS Automation permission to control Terminal.')}\n` +
+    `  ${c(COLOR.dim, '  Grant it with `npx claude-atone --test`, or in System Settings →')}\n` +
+    `  ${c(COLOR.dim, '  Privacy & Security → Automation. If the animation never shows, check there.')}\n`
+  );
 
   process.stdout.write('\n');
   if (allOk) process.stdout.write(c(COLOR.green, 'All checks passed.') + '\n');
