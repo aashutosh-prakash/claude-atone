@@ -4,6 +4,18 @@ All notable changes to this project are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/), and this project adheres to
 [Semantic Versioning](https://semver.org/).
 
+## [0.1.4]
+
+### Fixed
+- Figure still rendered magenta on macOS Sequoia+ even after 0.1.3: Apple
+  Terminal advertises `COLORTERM=truecolor` in the popup's login shell while
+  its renderer still mangles 24-bit `38;2` escapes (terracotta → magenta, blue
+  shirt → gray). `COLORTERM` therefore can't be trusted as a capability signal
+  there. The animation now hard-disables truecolor whenever
+  `TERM_PROGRAM=Apple_Terminal` and uses the 256-color fallback it renders
+  correctly; other terminals (iTerm2, VS Code, …) still get true 24-bit color
+  (`bin/updown.mjs`).
+
 ## [0.1.3]
 
 ### Fixed

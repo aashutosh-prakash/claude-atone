@@ -16,13 +16,16 @@ import { pathToFileURL } from 'node:url';
 const ESC = '\x1b[';
 
 // --- color support -------------------------------------------------------
-// Apple Terminal renders the figure as solid magenta on builds that don't
-// grok 24-bit `38;2;r;g;b` escapes (older macOS). The popup ALWAYS opens in
-// Terminal.app and its fresh login shell sets no COLORTERM, so we default to
-// the universally-supported 256-color palette (TERM=xterm-256color) and only
-// emit true 24-bit color when the terminal explicitly advertises it.
-const supportsTruecolor = (env = process.env) =>
-  /^(truecolor|24bit)$/i.test(String(env?.COLORTERM ?? '').trim());
+// Apple Terminal mangles 24-bit `38;2;r;g;b` escapes (the figure turns solid
+// magenta) but renders the 256-color palette fine. Crucially it CANNOT be
+// trusted via COLORTERM: on macOS Sequoia+ the popup's login shell reports
+// COLORTERM=truecolor even though the renderer still botches 24-bit color. So
+// we hard-disable truecolor under Apple Terminal and only emit it for other
+// terminals (iTerm2, VS Code, …) that advertise it via COLORTERM.
+const supportsTruecolor = (env = process.env) => {
+  if (env?.TERM_PROGRAM === 'Apple_Terminal') return false;
+  return /^(truecolor|24bit)$/i.test(String(env?.COLORTERM ?? '').trim());
+};
 
 const TRUECOLOR = supportsTruecolor();
 

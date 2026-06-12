@@ -1,6 +1,6 @@
 {
   "name": "claude-atone",
-  "version": "0.1.3",
+  "version": "0.1.4",
   "description": "When Claude Code admits a mistake, a little guy does penance squats in a popup terminal — a macOS Stop hook",
   "type": "module",
   "bin": {

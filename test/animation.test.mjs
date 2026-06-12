@@ -17,6 +17,16 @@ test('supportsTruecolor: only true when COLORTERM advertises 24-bit color', () =
   assert.equal(supportsTruecolor({ COLORTERM: '256color' }), false);
 });
 
+test('supportsTruecolor: NEVER trusts truecolor under Apple Terminal', () => {
+  // macOS Sequoia+ Terminal.app advertises COLORTERM=truecolor but mangles
+  // 24-bit escapes (terracotta -> magenta). Must fall back to 256-color.
+  assert.equal(supportsTruecolor({ COLORTERM: 'truecolor', TERM_PROGRAM: 'Apple_Terminal' }), false);
+  assert.equal(supportsTruecolor({ COLORTERM: '24bit', TERM_PROGRAM: 'Apple_Terminal' }), false);
+  // Other terminals that advertise truecolor are still honored.
+  assert.equal(supportsTruecolor({ COLORTERM: 'truecolor', TERM_PROGRAM: 'iTerm.app' }), true);
+  assert.equal(supportsTruecolor({ COLORTERM: 'truecolor', TERM_PROGRAM: 'vscode' }), true);
+});
+
 test('rgbTo256: maps RGB to a valid xterm-256 index (16..255)', () => {
   for (const c of [[70, 150, 220], [95, 105, 140], [217, 119, 87], [25, 25, 25], [200, 120, 70]]) {
     const idx = rgbTo256(c);
