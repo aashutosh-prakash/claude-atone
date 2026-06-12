@@ -94,6 +94,11 @@ its own TTY, so it plays cleanly.
 
 A 20-second cooldown keeps a burst of apologetic replies from stacking dialogs.
 
+**Opens as a tab instead of a window?** That's the macOS *"Prefer tabs when
+opening documents"* setting (**System Settings → Desktop & Dock**) — Terminal
+gives AppleScript no way to override it. Set it to **"Manually"** for a clean
+popup window. (Either way it still plays and closes itself afterward.)
+
 ## macOS permission
 
 Opening that popup uses **Apple Events to control Terminal**, which macOS gates

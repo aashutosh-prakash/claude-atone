@@ -10,7 +10,50 @@
 // Run continuously:  node updown.mjs
 // Play ~5s then exit (used by the Stop hook):  node updown.mjs --once
 
+import { realpathSync } from 'node:fs';
+import { pathToFileURL } from 'node:url';
+
 const ESC = '\x1b[';
+
+// --- color support -------------------------------------------------------
+// Apple Terminal renders the figure as solid magenta on builds that don't
+// grok 24-bit `38;2;r;g;b` escapes (older macOS). The popup ALWAYS opens in
+// Terminal.app and its fresh login shell sets no COLORTERM, so we default to
+// the universally-supported 256-color palette (TERM=xterm-256color) and only
+// emit true 24-bit color when the terminal explicitly advertises it.
+const supportsTruecolor = (env = process.env) =>
+  /^(truecolor|24bit)$/i.test(String(env?.COLORTERM ?? '').trim());
+
+const TRUECOLOR = supportsTruecolor();
+
+// xterm-256 6x6x6 color cube levels + 24-step grayscale ramp.
+const CUBE = [0, 95, 135, 175, 215, 255];
+const nearestCubeIdx = (v) => {
+  let best = 0;
+  for (let i = 1; i < 6; i++) if (Math.abs(CUBE[i] - v) < Math.abs(CUBE[best] - v)) best = i;
+  return best;
+};
+const dist2 = (a, b) => (a[0] - b[0]) ** 2 + (a[1] - b[1]) ** 2 + (a[2] - b[2]) ** 2;
+// Quantize an [r,g,b] triple to the nearest xterm-256 index, choosing between
+// the color cube and the grayscale ramp by whichever is closer.
+const rgbTo256 = ([r, g, b]) => {
+  const ri = nearestCubeIdx(r);
+  const gi = nearestCubeIdx(g);
+  const bi = nearestCubeIdx(b);
+  const cube = [CUBE[ri], CUBE[gi], CUBE[bi]];
+  const cubeIdx = 16 + 36 * ri + 6 * gi + bi;
+  // grayscale ramp: index 232 + n -> level 8 + 10n  (n = 0..23)
+  const n = Math.max(0, Math.min(23, Math.round((Math.round((r + g + b) / 3) - 8) / 10)));
+  const grayVal = 8 + 10 * n;
+  return dist2([r, g, b], [grayVal, grayVal, grayVal]) < dist2([r, g, b], cube) ? 232 + n : cubeIdx;
+};
+
+// SGR color escape: 24-bit when supported, otherwise a 256-color index.
+const colorSeq = ([r, g, b], { bg = false, truecolor = TRUECOLOR } = {}) => {
+  const lead = bg ? 48 : 38;
+  return truecolor ? `${ESC}${lead};2;${r};${g};${b}m` : `${ESC}${lead};5;${rgbTo256([r, g, b])}m`;
+};
+
 const W = 18;
 const H = 24; // 24 px tall -> 12 character rows (compact)
 const PAD = '  '; // left margin (2 spaces)
@@ -112,9 +155,9 @@ function paint() {
     for (let x = 0; x < W; x++) {
       const top = fb[row * 2 * W + x];
       const bot = fb[(row * 2 + 1) * W + x];
-      if (top && bot) out += `${ESC}38;2;${top[0]};${top[1]};${top[2]}m${ESC}48;2;${bot[0]};${bot[1]};${bot[2]}m▀`;
-      else if (top) out += `${ESC}49m${ESC}38;2;${top[0]};${top[1]};${top[2]}m▀`;
-      else if (bot) out += `${ESC}49m${ESC}38;2;${bot[0]};${bot[1]};${bot[2]}m▄`;
+      if (top && bot) out += colorSeq(top) + colorSeq(bot, { bg: true }) + '▀';
+      else if (top) out += `${ESC}49m` + colorSeq(top) + '▀';
+      else if (bot) out += `${ESC}49m` + colorSeq(bot) + '▄';
       else out += `${ESC}0m `;
     }
     out += `${ESC}0m${ESC}0K\n`;
@@ -138,8 +181,9 @@ function frame() {
   drawFigure(p);
   paint();
 
-  // Mid-tone truecolor caption so it stays legible on light AND dark terminals.
-  const accent = '\x1b[38;2;200;120;70m'; // warm terracotta
+  // Mid-tone warm-terracotta caption so it stays legible on light AND dark
+  // terminals (256-color fallback applied for Terminals without 24-bit color).
+  const accent = colorSeq([200, 120, 70]);
   // center each caption line under the figure (W-wide drawing area after PAD)
   const line = (s, b = false) => {
     const pad = PAD + ' '.repeat(Math.max(0, Math.floor((W - s.length) / 2)));
@@ -158,15 +202,33 @@ function frame() {
   if (ONCE && t >= ONCE_TICKS) quit();
 }
 
-// 2J clears the screen, 3J also clears the scrollback so nothing (login banner,
-// the command line) sits above the figure; H homes the cursor.
-process.stdout.write(`${ESC}2J${ESC}3J${ESC}H${ESC}?25l`);
-const timer = setInterval(frame, 90);
-
+let timer = null;
 function quit() {
-  clearInterval(timer);
+  if (timer) clearInterval(timer);
   process.stdout.write(`${ESC}?25h${ESC}0m\n`); // show cursor, reset
   process.exit(0);
 }
-process.on('SIGINT', quit);
-process.on('SIGTERM', quit);
+
+function run() {
+  // 2J clears the screen, 3J also clears the scrollback so nothing (login banner,
+  // the command line) sits above the figure; H homes the cursor.
+  process.stdout.write(`${ESC}2J${ESC}3J${ESC}H${ESC}?25l`);
+  timer = setInterval(frame, 90);
+  process.on('SIGINT', quit);
+  process.on('SIGTERM', quit);
+}
+
+// Run only when executed directly (node updown.mjs); stays inert when imported
+// by the test suite. argv[1] is canonicalized because import.meta.url is
+// already realpath-resolved by Node (a symlinked $HOME would otherwise differ).
+function invokedDirectly() {
+  if (!process.argv[1]) return false;
+  try {
+    return import.meta.url === pathToFileURL(realpathSync(process.argv[1])).href;
+  } catch {
+    return false;
+  }
+}
+if (invokedDirectly()) run();
+
+export { supportsTruecolor, rgbTo256, colorSeq };

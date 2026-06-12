@@ -4,6 +4,19 @@ All notable changes to this project are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/), and this project adheres to
 [Semantic Versioning](https://semver.org/).
 
+## [0.1.3]
+
+### Fixed
+- Figure rendered solid magenta on Macs whose Terminal.app build lacks 24-bit
+  truecolor support. The animation now emits the universally-supported
+  256-color palette by default and only uses truecolor when the terminal
+  advertises it via `COLORTERM` (`bin/updown.mjs`).
+
+### Documented
+- README now notes that the popup opening as a tab (rather than a window) is the
+  macOS *"Prefer tabs when opening documents"* setting, and that switching it to
+  "Manually" yields a clean popup window.
+
 ## [0.1.2]
 
 ### Changed
