@@ -5,7 +5,8 @@
 // Rendered with the chafa technique built in: each frame draws the figure as
 // colored pixels into a framebuffer, then paints two vertical pixels per
 // character cell using the ▀ half-block (fg = top pixel, bg = bottom pixel)
-// with 24-bit truecolor. No external tools, no GIF, no dependencies.
+// in 24-bit truecolor where the terminal supports it, otherwise a 256-color
+// fallback. No external tools, no GIF, no dependencies.
 //
 // Run continuously:  node updown.mjs
 // Play ~5s then exit (used by the Stop hook):  node updown.mjs --once

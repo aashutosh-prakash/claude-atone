@@ -187,7 +187,9 @@ This package is published with [npm provenance](https://docs.npmjs.com/generatin
 
 - macOS (Darwin) — uses `osascript` to open the popup window
 - Node.js ≥ 18
-- A truecolor terminal (iTerm2, Terminal.app, VS Code terminal)
+- A 256-color terminal — every modern terminal qualifies, including the
+  built-in Apple Terminal the popup opens in; 24-bit truecolor is used
+  automatically where it's actually supported (iTerm2, VS Code)
 - Claude Code CLI installed
 
 ## Roadmap

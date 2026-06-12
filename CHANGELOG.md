@@ -4,6 +4,14 @@ All notable changes to this project are documented here. The format follows
 [Keep a Changelog](https://keepachangelog.com/), and this project adheres to
 [Semantic Versioning](https://semver.org/).
 
+## [0.1.5]
+
+### Documented
+- Corrected the terminal requirement in the README (and the `updown.mjs` header
+  comment): truecolor is **not** required. Any 256-color terminal works —
+  including the built-in Apple Terminal the popup opens in — and 24-bit color is
+  used automatically only where it's actually supported (iTerm2, VS Code).
+
 ## [0.1.4]
 
 ### Fixed
